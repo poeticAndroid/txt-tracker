@@ -2,29 +2,34 @@ const fs = require("fs"),
   save_wav = require("./wav")
 
 let file = ""
+let names = []
 
 function save_txt(music, path = "./") {
-  file = "# Tracker source\n\n"
+  file = "# Music tracker source file\n\n"
   for (let i = 0; i < music.samples.length; i++) {
     if (music.samples[i]?.name.substring(0, 1) === "#")
       writeLine(music.samples[i]?.name)
   }
   writeLine()
   writeLine("title: " + music.title)
-  writeLine("channelCount: " + music.channels)
+  writeLine("channelCount: " + music.channelCount)
   writeLine("sequence: " + music.sequence.join(" "))
+  // if (music.restartPosition)
+  //   writeLine("restartPosition: " + music.restartPosition)
   writeLine()
+  names = []
+  let friendlyTitle = friendlyName(music.title.trim() || "mod")
+  for (let i = 0; i < music.tables.length; i++) {
+    writeTable(music.tables[i], i + 1)
+  }
   for (let i = 0; i < music.samples.length; i++) {
     if (music.samples[i].byteLength) {
-      let filename = music.title.trim() + "_samples/"
+      let filename = friendlyTitle + "_samples/"
       fs.mkdirSync(path + filename, { recursive: true })
-      filename += "sample" + ("000" + i).slice(-3) + ".wav"
+      filename += friendlyName(music.samples[i].name.trim() || "sample" + ("00" + (i + 1)).slice(-2)) + ".wav"
       fs.writeFileSync(path + filename, save_wav(music.samples[i].pcm))
       writeSample(music.samples[i], i + 1, filename)
     }
-  }
-  for (let i = 0; i < music.tables.length; i++) {
-    writeTable(music.tables[i], i + 1)
   }
   return file
 }
@@ -33,7 +38,8 @@ function writeSample(sample, i, filename = "./sample.wav") {
   writeLine("sample " + i + ":")
   writeLine("name: " + sample.name)
   writeLine("source: " + filename)
-  writeLine("finetune: " + sample.finetune)
+  if (sample.finetune)
+    writeLine("finetune: " + sample.finetune)
   writeLine("volume: " + sample.volume)
   writeLine("loopStart: " + sample.loopStart)
   writeLine("loopLength: " + sample.loopLength)
@@ -47,16 +53,20 @@ function writeTable(table, i) {
     let line = ""
     for (let j = 0; j < div.length; j++) {
       let chan = div[j]
-      if (chan.sample) {
-        line += notes[chan.semitone] || ("0000" + chan.semitone).slice(-3)
-        line += ("    " + chan.sample.toString(16)).slice(-2)
-      } else {
+      if (chan.period)
+        line += notes[chan.semitone] || ("   " + chan.period.toString(16)).slice(-3)
+      else
+        line += "   "
+      line += "."
+      if (chan.sample)
+        line += ("  " + chan.sample).slice(-2)
+      else
+        line += "  "
+      line += "."
+      if (chan.fx)
+        line += ("     " + chan.fx.toString(16)).slice(-5)
+      else
         line += "     "
-      }
-      line += ("    " + (chan.fx ? chan.fx : "").toString(16)).slice(-4)
-      // line += ("   " + chan.effect.id.toString(16)).slice(-2)
-      // line += ("   " + chan.effect.x.toString(16)).slice(-1)
-      // line += ("   " + chan.effect.y.toString(16)).slice(-1)
       line += "|"
     }
     writeLine(line)
@@ -66,6 +76,19 @@ function writeTable(table, i) {
 
 function writeLine(line = "") {
   file += line + "\n"
+}
+
+function friendlyName(name) {
+  name = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9\_]/g, '-')
+  if (names.includes(name)) {
+    let n = 1
+    while (names.includes(name + "-" + n)) {
+      n++
+    }
+    name += "-" + n
+  }
+  names.push(name)
+  return name
 }
 
 const notes = [

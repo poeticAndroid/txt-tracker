@@ -55,7 +55,7 @@ function load_mod(_file) {
     }
   }
   if (filepos !== file.length)
-    console.log(file.length - filepos, "bytes left to read!")
+    console.warn(file.length - filepos, "bytes left unread!")
   return music
 }
 
