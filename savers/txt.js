@@ -3,7 +3,7 @@ const fs = require("fs"),
 
 let file = ""
 
-function save_txt(music, path = "./") {
+function save_txt(music, path = "./", sampleFolder) {
   file = "# Music tracker source file\n"
   writeLine("version: " + 1)
   writeLine("format: " + music.format)
@@ -18,7 +18,8 @@ function save_txt(music, path = "./") {
   // if (music.restartPosition)
   //   writeLine("restartPosition: " + music.restartPosition)
   writeLine()
-  let friendlyTitle = friendlyName(music.title.trim() || "mod")
+  let friendlyTitle = friendlyName(music.title || "mod")
+  if (!sampleFolder) sampleFolder = friendlyTitle + "_samples/"
   writeLine("\n# ---=== TABLES ===---\n")
   for (let i = 0; i < music.tables.length; i++) {
     writeTable(music.tables[i], i + 1)
@@ -26,7 +27,7 @@ function save_txt(music, path = "./") {
   writeLine("\n# ---=== SAMPLES ===---\n")
   for (let i = 0; i < music.samples.length; i++) {
     if (music.samples[i]) {
-      let filename = friendlyTitle + "_samples/"
+      let filename = sampleFolder
       if (music.samples[i].pcm?.length) {
         fs.mkdirSync(path + filename, { recursive: true })
         filename += ("00" + (i + 1)).slice(-2) + "." + friendlyName(music.samples[i].name.trim() || "sample") + ".wav"
@@ -85,7 +86,7 @@ function writeLine(line = "") {
 }
 
 function friendlyName(name) {
-  name = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9\_]/g, '-')
+  name = name.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9\_]/g, '-')
   return name
 }
 

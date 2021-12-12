@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "description": "Music tracker compiler/decompiler",
   "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
+  "bin": {
+    "txt-tracker": "index.js"
   },
+  "scripts": {},
   "keywords": [
     "music",
     "tracker",
@@ -13,5 +14,8 @@
     "mod"
   ],
   "author": "poeticAndroid",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^8.3.0"
+  }
 }
