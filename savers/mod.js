@@ -18,7 +18,7 @@ function save_mod(_music) {
     if (len) len++
     writeUInt_Bigend(len, 2)
     writeUInt_Bigend((sample.finetune || 0), 1)
-    writeUInt_Bigend((sample.volume || 0), 1)
+    writeUInt_Bigend((Math.round(sample.volume * 64) || 0), 1)
     writeUInt_Bigend((sample.loopStart || 0) / 2, 2)
     writeUInt_Bigend((sample.loopLength || 0) / 2, 2)
   }

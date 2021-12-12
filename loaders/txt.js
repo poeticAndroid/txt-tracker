@@ -123,7 +123,8 @@ function readSample(path = "./") {
           sample.name = value
           break
         case "volume":
-          sample.volume = parseInt(value)
+          sample.volume = parseFloat(value)
+          if (sample.volume > 1) sample.volume /= 64
           break
         case "loopStart":
           sample.loopStart = parseInt(value)

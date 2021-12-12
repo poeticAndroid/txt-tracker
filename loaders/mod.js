@@ -29,7 +29,7 @@ function load_mod(_file) {
       name: readText(22),
       length: readUInt_Bigend(2) * 2,
       finetune: readUInt_Bigend(1),
-      volume: readUInt_Bigend(1),
+      volume: readUInt_Bigend(1) / 64,
       loopStart: readUInt_Bigend(2),
       loopLength: readUInt_Bigend(2),
     }

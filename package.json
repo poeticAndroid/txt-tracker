@@ -1,6 +1,6 @@
 {
   "name": "txt-tracker",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Music tracker compiler/decompiler",
   "main": "index.js",
   "bin": {
