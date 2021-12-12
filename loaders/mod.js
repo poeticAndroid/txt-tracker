@@ -11,9 +11,14 @@ function load_mod(_file) {
   music.magic = readText(4)
   filepos = 0
   let sampleCount = 15
-  if ("\nM.K.\nFLT4\nFLT8\nM!K!\n4CHN\n6CHN\n8CHN\n".includes("\n" + music.magic + "\n")) sampleCount = 31
-
   music.channelCount = 4
+  console.log("mod", music.magic)
+  if ("\nM.K.\nFLT4\nFLT8\nM!K!\n4CHN\n6CHN\n8CHN\n".includes("\n" + music.magic + "\n")) {
+    sampleCount = 31
+    if (music.magic.includes("6")) music.channelCount = 6
+    if (music.magic.includes("8")) music.channelCount = 8
+  }
+
 
   music.title = readText(20)
   console.log("Title:", music.title)
@@ -21,7 +26,7 @@ function load_mod(_file) {
   for (let i = 0; i < sampleCount; i++) {
     let sample = {
       name: readText(22),
-      byteLength: readUInt_Bigend(2) * 2,
+      length: readUInt_Bigend(2) * 2,
       finetune: readUInt_Bigend(1),
       volume: readUInt_Bigend(1),
       loopStart: readUInt_Bigend(2),
@@ -32,7 +37,7 @@ function load_mod(_file) {
       sample.loopLength *= 2
     }
     music.samples[i] = sample
-    if (sample.name) console.log(sample.name)
+    if (sample.name.trim()) console.log(sample.name)
   }
   music.sequenceLength = readUInt_Bigend(1)
   music.restartPosition = readUInt_Bigend(1)
@@ -47,11 +52,12 @@ function load_mod(_file) {
   }
 
   for (let i = 0; i < sampleCount; i++) {
-    if (music.samples[i].byteLength >= 2) {
+    if (music.samples[i].length >= 2) {
       music.samples[i].pcm = readBytes(2)
-      music.samples[i].pcm = pcm8to16(readBytes(music.samples[i].byteLength - 2))
+      music.samples[i].length += -2
+      music.samples[i].pcm = pcm8to16(readBytes(music.samples[i].length))
     } else {
-      music.samples[i].pcm = readBytes(music.samples[i].byteLength)
+      music.samples[i].pcm = readBytes(music.samples[i].length)
     }
   }
   if (filepos !== file.length)
