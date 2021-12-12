@@ -2,7 +2,6 @@ const fs = require("fs"),
   save_wav = require("./wav")
 
 let file = ""
-let names = []
 
 function save_txt(music, path = "./") {
   file = "# Music tracker source file\n\n"
@@ -17,17 +16,18 @@ function save_txt(music, path = "./") {
   // if (music.restartPosition)
   //   writeLine("restartPosition: " + music.restartPosition)
   writeLine()
-  names = []
   let friendlyTitle = friendlyName(music.title.trim() || "mod")
   for (let i = 0; i < music.tables.length; i++) {
     writeTable(music.tables[i], i + 1)
   }
   for (let i = 0; i < music.samples.length; i++) {
-    if (music.samples[i].byteLength) {
+    if (music.samples[i]) {
       let filename = friendlyTitle + "_samples/"
-      fs.mkdirSync(path + filename, { recursive: true })
-      filename += friendlyName(music.samples[i].name.trim() || "sample" + ("00" + (i + 1)).slice(-2)) + ".wav"
-      fs.writeFileSync(path + filename, save_wav(music.samples[i].pcm))
+      if (music.samples[i].pcm?.length) {
+        fs.mkdirSync(path + filename, { recursive: true })
+        filename += ("00" + (i + 1)).slice(-2) + "." + friendlyName(music.samples[i].name.trim() || "sample") + ".wav"
+        fs.writeFileSync(path + filename, save_wav(music.samples[i].pcm))
+      }
       writeSample(music.samples[i], i + 1, filename)
     }
   }
@@ -37,12 +37,14 @@ function save_txt(music, path = "./") {
 function writeSample(sample, i, filename = "./sample.wav") {
   writeLine("sample " + i + ":")
   writeLine("name: " + sample.name)
-  writeLine("source: " + filename)
+  if (sample.pcm?.length) {
+    writeLine("source: " + filename)
+    writeLine("volume: " + sample.volume)
+    writeLine("loopStart: " + sample.loopStart)
+    writeLine("loopLength: " + sample.loopLength)
+  }
   if (sample.finetune)
     writeLine("finetune: " + sample.finetune)
-  writeLine("volume: " + sample.volume)
-  writeLine("loopStart: " + sample.loopStart)
-  writeLine("loopLength: " + sample.loopLength)
   writeLine()
 }
 
@@ -53,7 +55,7 @@ function writeTable(table, i) {
     let line = ""
     for (let j = 0; j < div.length; j++) {
       let chan = div[j]
-      if (chan.period)
+      if (chan.period || chan.note)
         line += notes[chan.semitone] || ("   " + chan.period.toString(16)).slice(-3)
       else
         line += "   "
@@ -80,14 +82,6 @@ function writeLine(line = "") {
 
 function friendlyName(name) {
   name = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9\_]/g, '-')
-  if (names.includes(name)) {
-    let n = 1
-    while (names.includes(name + "-" + n)) {
-      n++
-    }
-    name += "-" + n
-  }
-  names.push(name)
   return name
 }
 
