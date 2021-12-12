@@ -4,22 +4,26 @@ const fs = require("fs"),
 let file = ""
 
 function save_txt(music, path = "./") {
-  file = "# Music tracker source file\n\n"
+  file = "# Music tracker source file\n"
+  writeLine("version: " + 1)
+  writeLine("format: " + music.format)
+  writeLine()
+  writeLine("title: " + music.title)
   for (let i = 0; i < music.samples.length; i++) {
     if (music.samples[i]?.name.substring(0, 1) === "#")
       writeLine(music.samples[i]?.name)
   }
-  writeLine()
-  writeLine("title: " + music.title)
   writeLine("channelCount: " + music.channelCount)
   writeLine("sequence: " + music.sequence.join(" "))
   // if (music.restartPosition)
   //   writeLine("restartPosition: " + music.restartPosition)
   writeLine()
   let friendlyTitle = friendlyName(music.title.trim() || "mod")
+  writeLine("\n# ---=== TABLES ===---\n")
   for (let i = 0; i < music.tables.length; i++) {
     writeTable(music.tables[i], i + 1)
   }
+  writeLine("\n# ---=== SAMPLES ===---\n")
   for (let i = 0; i < music.samples.length; i++) {
     if (music.samples[i]) {
       let filename = friendlyTitle + "_samples/"

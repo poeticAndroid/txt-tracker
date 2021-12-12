@@ -12,8 +12,8 @@ function save_wav(data) {
   writeUInt32_Littleend(16)
   writeUInt16_Littleend(1)
   writeUInt16_Littleend(1)
-  writeUInt32_Littleend(8000)
-  writeUInt32_Littleend(8000 * 1 * 2)
+  writeUInt32_Littleend(44100)
+  writeUInt32_Littleend(44100 * 1 * 2)
   writeUInt16_Littleend(1 * 2)
   writeUInt16_Littleend(16)
 

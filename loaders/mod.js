@@ -1,5 +1,6 @@
 let file, filepos = 0,
   music = {
+    format: "mod",
     title: "Untitled",
     samples: [],
     tables: [],

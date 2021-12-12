@@ -28,6 +28,13 @@ function load_txt(_file, path = "./") {
       let field = parts[0].trim().split(/\s+/)
       let value = line.substring(line.indexOf(":") + 1).trim()
       switch (field[0]) {
+        case "version":
+          music.version = parseInt(value)
+          if (music.version > 1) console.warn("This txt loader only supports version 1 or older!")
+          break
+        case "format":
+          music.format = value.toLowerCase()
+          break
         case "title":
           music.title = value
           break
