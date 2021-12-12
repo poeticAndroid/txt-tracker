@@ -3,10 +3,13 @@ Music tracker compiler/decompiler
 
 With this tool you can use your prefered text editor as a music tracker!
 
-Supported formats:
- - `txt` (the source format you edit in)
- - `mod` (Noisetracker/Soundtracker/Protracker)
+## Installation
 
+ 1. Install [Node](https://nodejs.org/)
+ 2. Type `npm i -g txt-tracker` in the terminal
+ 3. Profit! 🎉
+
+## Usage
 ```
 Usage: txt-tracker [options]
 
@@ -18,3 +21,7 @@ Options:
   -s, --samples <folder>        Path to save samples
   -h, --help                    display help for command
 ```
+
+Supported formats:
+ - `txt` (the source format you edit in)
+ - `mod` (Noisetracker/Soundtracker/Protracker)
