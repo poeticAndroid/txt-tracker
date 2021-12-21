@@ -6,7 +6,7 @@ With this tool you can use your prefered text editor as a music tracker!
 ## Installation
 
  1. Install [Node](https://nodejs.org/)
- 2. Type `npm i -g txt-tracker` in the terminal
+ 2. Type `npm install -g txt-tracker` in the terminal
  3. Profit! 🎉
 
 ## Usage
