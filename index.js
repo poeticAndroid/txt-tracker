@@ -18,6 +18,7 @@ program
 function init() {
   let opts = program.opts()
   if (!opts.inputFormat) opts.inputFormat = opts.in.substring(opts.in.lastIndexOf(".") + 1)
+  if (!opts.out && opts.outputFormat) opts.out = opts.in + "." + opts.outputFormat
   if (!opts.out) opts.out = opts.in + (opts.inputFormat === "txt" ? ".mod" : ".txt")
   if (!opts.outputFormat) opts.outputFormat = opts.out.substring(opts.out.lastIndexOf(".") + 1)
   if (!opts.samples) opts.samples = path.basename(opts.out).substring(0, path.basename(opts.out).indexOf(".")) + "_samples"
