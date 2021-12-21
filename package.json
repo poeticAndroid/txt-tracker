@@ -6,6 +6,12 @@
   "bin": {
     "txt-tracker": "index.js"
   },
+  "homepage": "https://github.com/poeticAndroid/txt-tracker",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/poeticAndroid/txt-tracker.git",
+    "web": "https://github.com/poeticAndroid/txt-tracker"
+  },
   "scripts": {},
   "keywords": [
     "music",
