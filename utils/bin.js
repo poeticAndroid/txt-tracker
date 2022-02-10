@@ -1,10 +1,9 @@
 class Binary {
   constructor(len = 1024) {
-    this.buffer = new ArrayBuffer(len)
+    this.uint8Array = new Uint8Array(len)
     this.reset()
   }
   reset() {
-    this.uint8Array = new Uint8Array(this.buffer)
     this.pos = 0
     this.length = 0
     this._bits = ""
@@ -26,11 +25,11 @@ class Binary {
     this.jumpTo(0)
   }
   toBuffer() {
-    return this.buffer.slice(0, this.length)
+    return this.uint8Array.buffer.slice(0, this.length)
   }
 
   readBuffer(len = this.length - this.pos) {
-    return this.buffer.slice(this.pos, this.pos += len)
+    return this.uint8Array.buffer.slice(this.pos, this.pos += len)
   }
   readUIntLE(len) {
     let val = 0
@@ -112,12 +111,12 @@ class Binary {
   }
 
   writeBuffer(buf, len = buf.byteLength) {
+    if (buf instanceof ArrayBuffer) buf = new Uint8Array(buf)
     this.writeIntLE(len, 0)
     this.uint8Array.set(buf.slice(0, len), this.pos - len)
   }
   writeIntLE(len, val) {
-    while (this.buffer.byteLength - this.pos < len) this.doubleSize()
-    let val = 0
+    while (this.uint8Array.byteLength - this.pos < len) this.doubleSize()
     for (let i = 0; i < len; i++) {
       this.uint8Array[this.pos++] = val
       val = val >> 8
@@ -125,21 +124,15 @@ class Binary {
     this.length = Math.max(this.pos, this.length)
   }
   writeIntBE(len, val) {
-    while (this.buffer.byteLength - this.pos < len) this.doubleSize()
-    let val = 0
-    for (let i = 0; i < len; i++) {
-      this.uint8Array[this.pos++] = val
-      val = val >> 8
-    }
+    this.writeIntLE(len, val)
     for (let i = 0; i < len / 2; i++) {
       val = this.uint8Array[this.pos - len + i]
       this.uint8Array[this.pos - len + i] = this.uint8Array[this.pos - 1 - i]
       this.uint8Array[this.pos - 1 - i] = val
     }
-    this.length = Math.max(this.pos, this.length)
   }
   writeIntBits(len, val) {
-    while (this.buffer.byteLength - this.pos < len) this.doubleSize()
+    while (this.uint8Array.byteLength - this.pos < len) this.doubleSize()
     let str = val < 0 ? "1" : "0"
     while (str.length < len) str += str
     while (val < 0) val += Math.pow(2, len)
@@ -157,10 +150,9 @@ class Binary {
     this.writeBuffer(data, len)
   }
 
-  doubleSize() {
-    let oldbuf = this.buffer
-    this.buffer = new ArrayBuffer(oldbuf.byteLength * 2)
-    this.uint8Array = new Uint8Array(this.buffer)
+  doubleSize() { // this doesn't seem to work for some reason?
+    let oldbuf = this.uint8Array
+    this.uint8Array = new Uint8Array(oldbuf.byteLength * 2)
     this.uint8Array.set(oldbuf)
   }
 }

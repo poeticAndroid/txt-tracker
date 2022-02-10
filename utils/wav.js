@@ -49,57 +49,57 @@ class Wave {
     this._writeChunk(bin, "data", this.data)
   }
 
-  readSint8() {
+  readSInt8() {
     switch (this.bitsPerSample) {
       case 8:
-        return this.data.readUint8() - 128
+        return this.data.readUIntLE(1) - 128
       case 16:
-        this.data.readSint8()
-        return this.data.readSint8()
+        this.data.readSIntLE(1)
+        return this.data.readSIntLE(1)
     }
   }
-  readSint16() {
+  readSInt16() {
     switch (this.bitsPerSample) {
       case 8:
-        let val = this.data.readUint8()
+        let val = this.data.readUIntLE(1)
         val = val * 256 + val
         return val - 32768
       case 16:
-        return this.data.readSint16LE()
+        return this.data.readSIntLE(2)
     }
   }
 
-  writeSint8(val) {
+  writeSInt8(val) {
     switch (this.bitsPerSample) {
       case 8:
-        return this.data.writeInt8(val) + 128
+        return this.data.writeIntLE(1, val + 128)
       case 16:
-        this.data.writeInt8(val)
-        return this.data.writeInt8(val)
+        this.data.writeIntLE(1, val)
+        return this.data.writeIntLE(1, val)
     }
   }
-  writeSint16(val) {
+  writeSInt16(val) {
     switch (this.bitsPerSample) {
       case 8:
         val += 32768
         val = Math.floor(val / 256)
-        return this.data.writeInt8(val)
+        return this.data.writeIntLE(1, val)
       case 16:
         return this.data.writeIntLE(2, val)
     }
   }
 
   _skipToChunck(bin, id) {
-    let _id = bin.readText(4)
+    let _id = bin.readString(4)
     let _len = bin.readUIntLE(4)
     while (_id !== id && !bin.isEOF()) {
       bin.skip(_len)
-      _id = bin.readText(4)
+      _id = bin.readString(4)
       _len = bin.readUIntLE(4)
     }
   }
   _writeChunk(bin, id, chunk) {
-    bin.writeText(id, 4)
+    bin.writeString(id, 4)
     bin.writeIntLE(4, chunk.length)
     bin.writeBuffer(chunk.toBuffer())
   }
