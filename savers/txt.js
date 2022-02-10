@@ -28,10 +28,10 @@ function save_txt(music, path = "./", sampleFolder) {
   for (let i = 0; i < music.samples.length; i++) {
     if (music.samples[i]) {
       let filename = sampleFolder
-      if (music.samples[i].pcm?.length) {
+      if (music.samples[i].wave?.length) {
         fs.mkdirSync(path + filename, { recursive: true })
         filename += ("00" + (i + 1)).slice(-2) + "." + friendlyName(music.samples[i].name.trim() || "sample") + ".wav"
-        fs.writeFileSync(path + filename, save_wav(music.samples[i].pcm))
+        fs.writeFileSync(path + filename, save_wav(music.samples[i].wave))
       }
       writeSample(music.samples[i], i + 1, filename)
     }
@@ -42,7 +42,7 @@ function save_txt(music, path = "./", sampleFolder) {
 function writeSample(sample, i, filename = "./sample.wav") {
   writeLine("sample " + i + ":")
   writeLine("name: " + sample.name)
-  if (sample.pcm?.length) {
+  if (sample.wave?.length) {
     writeLine("source: " + filename)
     writeLine("volume: " + sample.volume)
     writeLine("loopStart: " + sample.loopStart)

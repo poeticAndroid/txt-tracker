@@ -27,6 +27,9 @@ class Binary {
   toBuffer() {
     return this.uint8Array.buffer.slice(0, this.length)
   }
+  toJSON(key) {
+    return Buffer.from(this.toBuffer()).toString("base64")
+  }
 
   readBuffer(len = this.length - this.pos) {
     return this.uint8Array.buffer.slice(this.pos, this.pos += len)

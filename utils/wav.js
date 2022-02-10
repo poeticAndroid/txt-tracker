@@ -19,9 +19,9 @@ class Wave {
   fromBuffer(buf) {
     let bin = new Binary()
     bin.fromBuffer(buf)
-    if (bin.readText(4) !== "RIFF") return console.error("Unsupported sample format!")
+    if (bin.readString(4) !== "RIFF") return console.error("Unsupported sample format!")
     bin.readUIntLE(4)
-    if (bin.readText(4) !== "WAVE") return console.error("Unsupported sample format!")
+    if (bin.readString(4) !== "WAVE") return console.error("Unsupported sample format!")
     this._skipToChunck(bin, "fmt ")
     this.audioFormat = bin.readUIntLE(2)
     this.channelCount = bin.readUIntLE(2)
@@ -29,14 +29,14 @@ class Wave {
     this.byteRate = bin.readUIntLE(4)
     this.blockAlign = bin.readUIntLE(2)
     this.bitsPerSample = bin.readUIntLE(2)
-    this._skipToChunck("data")
+    this._skipToChunck(bin, "data")
     this.data.fromBuffer(bin.readBuffer())
   }
   toBuffer() {
     let bin = new Binary()
-    bin.writeText("RIFF")
+    bin.writeString("RIFF")
     bin.writeIntLE(4, 36 + this.data.length)
-    bin.writeText("WAVE")
+    bin.writeString("WAVE")
 
     let fmt = new Binary(1)
     fmt.writeIntLE(2, this.audioFormat)
@@ -47,6 +47,11 @@ class Wave {
     fmt.writeIntLE(2, this.bitsPerSample)
     this._writeChunk(bin, "fmt ", fmt)
     this._writeChunk(bin, "data", this.data)
+    return bin.toBuffer()
+  }
+  toJSON(key) {
+    console.log("wav len", this.data.length)
+    return Buffer.from(this.toBuffer()).toString("base64")
   }
 
   readSInt8() {

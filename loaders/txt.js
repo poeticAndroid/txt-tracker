@@ -137,8 +137,8 @@ function readSample(path = "./") {
           break
         case "source":
           let data = fs.readFileSync(path + value)
-          sample.pcm = load_wav(data)
-          sample.length = sample.pcm.length / 2
+          sample.wave = load_wav(data)
+          sample.length = sample.wave.length / 2
           break
 
         default:

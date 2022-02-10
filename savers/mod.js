@@ -20,7 +20,7 @@ function save_mod(music) {
 
   // Sequence!
   let tableCount = music.sequence.reduce((a, b) => a > b ? a : b)
-  bin.writeIntBE(1, music.sequenceLength)
+  bin.writeIntBE(1, music.sequenceLength || music.sequence.length)
   bin.writeIntBE(1, 127)
   for (let i = 0; i < 128; i++) {
     bin.writeIntBE(1, music.sequence[i] - 1)
@@ -48,10 +48,10 @@ function save_mod(music) {
   for (let i = 0; i < 31; i++) {
     let sample = music.samples[i] || {}
     bin.writeIntBE(2, 0)
-    if (sample.pcm) {
-      sample.pcm.data.jumpTo(0)
+    if (sample.wave) {
+      sample.wave.data.jumpTo(0)
       for (let j = 0; j < sample.length; j++) {
-        bin.writeIntBE(1, sample.pcm.readSInt8())
+        bin.writeIntBE(1, sample.wave.readSInt8())
       }
     }
   }

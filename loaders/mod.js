@@ -47,14 +47,18 @@ function load_mod(buf) {
   }
 
   // Sequence!
-  music.sequenceLength = bin.readUIntBE(1)
+  let sequenceLength = bin.readUIntBE(1)
   music.restartPosition = bin.readUIntBE(1)
-  music.sequence = (new Uint8Array(bin.readBuffer(128).slice(0, music.sequenceLength))).map(n => n + 1)
+  music.sequence = []
+  for (let i = 0; i < 128; i++) {
+    music.sequence.push(bin.readUIntBE(1) + 1)
+  }
   if (sampleCount > 15)
     music.magic = bin.readString(4)
 
   // Tables!
   let tableCount = music.sequence.reduce((a, b) => a > b ? a : b)
+  music.sequence.length = sequenceLength
   for (let i = 0; i < tableCount; i++) {
     let table = []
     for (let div = 0; div < 64; div++) {
@@ -88,12 +92,13 @@ function load_mod(buf) {
     if (sample.length >= 2) {
       bin.skip(2)
       sample.length += -2
-      sample.pcm = new Wave()
+      sample.wave = new Wave()
+      sample.wave.reset(1, 8, 16000)
       for (let j = 0; j < sample.length; j++) {
-        sample.pcm.writeSInt8(bin.readSIntBE(1))
+        sample.wave.writeSInt8(bin.readSIntBE(1))
       }
     } else {
-      sample.pcm = bin.skip(sample.length)
+      sample.wave = bin.skip(sample.length)
     }
   }
 

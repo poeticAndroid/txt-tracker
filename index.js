@@ -30,7 +30,7 @@ function init() {
   console.info("> Parsing as", opts.inputFormat)
   const loader = require("./loaders/" + opts.inputFormat)
   music = loader(file, path.dirname(opts.in) + "/", opts.samples)
-  console.info("\n(i) Compiling to", opts.outputFormat)
+  console.info("\n> Compiling to", opts.outputFormat)
   const saver = require("./savers/" + opts.outputFormat)
   file = saver(music, path.dirname(opts.out) + "/", opts.samples)
 
