@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const
-  process = require("process"),
   fs = require("fs"),
   path = require("path"),
   commander = require("commander")
@@ -24,19 +23,20 @@ function init() {
   if (!opts.samples) opts.samples = path.basename(opts.out).substring(0, path.basename(opts.out).indexOf(".")) + "_samples"
   if (!opts.samples.substring(opts.samples.length - 1) !== "/") opts.samples += "/"
 
-  console.log("Loading file", opts.in)
+  console.info("> Loading file", opts.in)
   let file = fs.readFileSync(opts.in)
   let music
 
-  console.log("Converting", opts.inputFormat, "to", opts.outputFormat)
+  console.info("> Parsing as", opts.inputFormat)
   const loader = require("./loaders/" + opts.inputFormat)
-  const saver = require("./savers/" + opts.outputFormat)
   music = loader(file, path.dirname(opts.in) + "/", opts.samples)
+  console.info("\n(i) Compiling to", opts.outputFormat)
+  const saver = require("./savers/" + opts.outputFormat)
   file = saver(music, path.dirname(opts.out) + "/", opts.samples)
 
-  console.log("Saving file", opts.out)
+  console.info("> Saving file", opts.out)
   fs.writeFileSync(opts.out, file)
-  console.log("...dONE!\n")
+  console.info("> ...dONE!\n")
 }
 
 init()
