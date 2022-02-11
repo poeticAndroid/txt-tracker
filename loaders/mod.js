@@ -5,6 +5,7 @@ const
 
 function load_mod(buf) {
   let music = {
+    version: 1,
     format: "mod",
     title: "Untitled",
     samples: [],
@@ -92,10 +93,12 @@ function load_mod(buf) {
     if (sample.length >= 2) {
       bin.skip(2)
       sample.length += -2
-      sample.wave = new Wave()
-      sample.wave.reset(1, 8, 16000)
-      for (let j = 0; j < sample.length; j++) {
-        sample.wave.writeSInt8(bin.readSIntBE(1))
+      if (sample.length) {
+        sample.wave = new Wave()
+        sample.wave.reset(1, 8, 16000)
+        for (let j = 0; j < sample.length; j++) {
+          sample.wave.writeSInt8(bin.readSIntBE(1))
+        }
       }
     } else {
       sample.wave = bin.skip(sample.length)

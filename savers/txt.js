@@ -1,5 +1,5 @@
-const fs = require("fs"),
-  save_wav = require("./wav")
+const
+  fs = require("fs")
 
 let file = ""
 
@@ -28,10 +28,10 @@ function save_txt(music, path = "./", sampleFolder) {
   for (let i = 0; i < music.samples.length; i++) {
     if (music.samples[i]) {
       let filename = sampleFolder
-      if (music.samples[i].wave?.length) {
+      if (music.samples[i].wave) {
         fs.mkdirSync(path + filename, { recursive: true })
         filename += ("00" + (i + 1)).slice(-2) + "." + friendlyName(music.samples[i].name.trim() || "sample") + ".wav"
-        fs.writeFileSync(path + filename, save_wav(music.samples[i].wave))
+        fs.writeFileSync(path + filename, new Uint8Array(music.samples[i].wave.toBuffer()))
       }
       writeSample(music.samples[i], i + 1, filename)
     }
@@ -42,7 +42,7 @@ function save_txt(music, path = "./", sampleFolder) {
 function writeSample(sample, i, filename = "./sample.wav") {
   writeLine("sample " + i + ":")
   writeLine("name: " + sample.name)
-  if (sample.wave?.length) {
+  if (sample.wave) {
     writeLine("source: " + filename)
     writeLine("volume: " + sample.volume)
     writeLine("loopStart: " + sample.loopStart)

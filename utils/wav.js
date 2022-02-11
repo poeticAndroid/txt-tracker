@@ -16,6 +16,9 @@ class Wave {
     this.byteRate = this.sampleRate * this.channelCount * (this.bitsPerSample / 8)
     this.blockAlign = this.channelCount * (this.bitsPerSample / 8)
   }
+  getSampleLength() {
+    return this.data.length / this.channelCount / (this.bitsPerSample / 8)
+  }
   fromBuffer(buf) {
     let bin = new Binary()
     bin.fromBuffer(buf)
@@ -50,7 +53,6 @@ class Wave {
     return bin.toBuffer()
   }
   toJSON(key) {
-    console.log("wav len", this.data.length)
     return Buffer.from(this.toBuffer()).toString("base64")
   }
 

@@ -24,4 +24,5 @@ Options:
 
 Supported formats:
  - `txt` (the source format you edit in)
+ - `json` (internal object representation of the source file, useful for debugging)
  - `mod` (Noisetracker/Soundtracker/Protracker)

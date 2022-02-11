@@ -11,7 +11,8 @@ function save_mod(music) {
   for (let i = 0; i < 31; i++) {
     let sample = music.samples[i] || {}
     bin.writeString(sample.name || "", 22)
-    bin.writeIntBE(2, (sample.length || 0) / 2 + 1)
+    if (sample.wave) bin.writeIntBE(2, Math.ceil((sample.wave?.getSampleLength() || 0) / 2) + 1)
+    else bin.writeIntBE(2, 0)
     bin.writeIntBE(1, sample.finetune || 0)
     bin.writeIntBE(1, Math.round((sample.volume || 0) * 64))
     bin.writeIntBE(2, (sample.loopStart || 0) / 2)
@@ -35,11 +36,11 @@ function save_mod(music) {
       let division = table[div] || []
       for (let chan = 0; chan < music.channelCount; chan++) {
         let channel = division[chan] || {}
-        channel.period = modinfo.semitoneToPeriod(channel.semitone)
-        bin.writeIntBits(4, Math.floor(channel.sample / 16))
-        bin.writeIntBits(12, channel.period)
-        bin.writeIntBits(4, channel.sample)
-        bin.writeIntBits(12, channel.fx)
+        channel.period = modinfo.semitoneToPeriod(channel.semitone) || 0
+        bin.writeIntBits(4, Math.floor((channel.sample || 0) / 16))
+        bin.writeIntBits(12, channel.period || 0)
+        bin.writeIntBits(4, channel.sample || 0)
+        bin.writeIntBits(12, channel.fx || 0)
       }
     }
   }
@@ -47,10 +48,11 @@ function save_mod(music) {
   // Samples!
   for (let i = 0; i < 31; i++) {
     let sample = music.samples[i] || {}
-    bin.writeIntBE(2, 0)
     if (sample.wave) {
+      bin.writeIntBE(2, 0)
       sample.wave.data.jumpTo(0)
-      for (let j = 0; j < sample.length; j++) {
+      let len = Math.ceil(sample.wave.getSampleLength() / 2) * 2
+      for (let j = 0; j < len; j++) {
         bin.writeIntBE(1, sample.wave.readSInt8())
       }
     }

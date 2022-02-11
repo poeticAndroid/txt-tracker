@@ -1,5 +1,6 @@
-const fs = require("fs"),
-  load_wav = require("./wav")
+const
+  fs = require("fs"),
+  Wave = require("../utils/wav")
 
 let file, filepos = 0,
   music
@@ -137,8 +138,8 @@ function readSample(path = "./") {
           break
         case "source":
           let data = fs.readFileSync(path + value)
-          sample.wave = load_wav(data)
-          sample.length = sample.wave.length / 2
+          sample.wave = new Wave()
+          sample.wave.fromBuffer(data)
           break
 
         default:
