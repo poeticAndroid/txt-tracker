@@ -50,7 +50,7 @@ function save_mod(music) {
     let sample = music.samples[i] || {}
     if (sample.wave) {
       bin.writeIntBE(2, 0)
-      sample.wave.data.jumpTo(0)
+      sample.wave.makeMono()
       let len = Math.ceil(sample.wave.getSampleLength() / 2) * 2
       for (let j = 0; j < len; j++) {
         bin.writeIntBE(1, sample.wave.readSInt8())

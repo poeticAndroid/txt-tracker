@@ -38,6 +38,10 @@ function load_mod(buf) {
     sample.volume = bin.readUIntBE(1) / 64
     sample.loopStart = bin.readUIntBE(2)
     sample.loopLength = bin.readUIntBE(2)
+    if (sample.loopLength <= 1) {
+      sample.loopStart = 0
+      sample.loopLength = 0
+    }
     if (sampleCount > 15) {
       sample.loopStart *= 2
       sample.loopLength *= 2

@@ -26,17 +26,17 @@ function init() {
   console.info("> Loading file", opts.in)
   let file = fs.readFileSync(opts.in)
   let music
-
   console.info("> Parsing as", opts.inputFormat)
   const loader = require("./loaders/" + opts.inputFormat)
   music = loader(file, path.dirname(opts.in) + "/", opts.samples)
+
   console.info("\n> Compiling to", opts.outputFormat)
   const saver = require("./savers/" + opts.outputFormat)
   file = saver(music, path.dirname(opts.out) + "/", opts.samples)
-
   console.info("> Saving file", opts.out)
   fs.writeFileSync(opts.out, file)
-  console.info("> ...dONE!\n")
+
+  console.info("\n> ...dONE!\n")
 }
 
 init()

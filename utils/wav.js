@@ -25,15 +25,15 @@ class Wave {
     if (bin.readString(4) !== "RIFF") return console.error("Unsupported sample format!")
     bin.readUIntLE(4)
     if (bin.readString(4) !== "WAVE") return console.error("Unsupported sample format!")
-    this._skipToChunck(bin, "fmt ")
+    this._skipToChunk(bin, "fmt ")
     this.audioFormat = bin.readUIntLE(2)
     this.channelCount = bin.readUIntLE(2)
     this.sampleRate = bin.readUIntLE(4)
     this.byteRate = bin.readUIntLE(4)
     this.blockAlign = bin.readUIntLE(2)
     this.bitsPerSample = bin.readUIntLE(2)
-    this._skipToChunck(bin, "data")
-    this.data.fromBuffer(bin.readBuffer())
+    let len = this._skipToChunk(bin, "data")
+    this.data.fromBuffer(bin.readBuffer(len))
   }
   toBuffer() {
     let bin = new Binary()
@@ -50,10 +50,28 @@ class Wave {
     fmt.writeIntLE(2, this.bitsPerSample)
     this._writeChunk(bin, "fmt ", fmt)
     this._writeChunk(bin, "data", this.data)
+    bin.jumpTo(4)
+    bin.writeIntLE(4, bin.length - 8)
     return bin.toBuffer()
   }
   toJSON(key) {
     return Buffer.from(this.toBuffer()).toString("base64")
+  }
+
+  makeMono() {
+    this.data.jumpTo(0)
+    if (this.channelCount < 1) this.channelCount = 1
+    if (this.channelCount === 1) return
+    let data = new Binary()
+    for (let i = 0; i < this.data.length / this.channelCount; i++) {
+      data.writeIntLE(this.bitsPerSample / 8, this.data.readUIntLE(this.bitsPerSample / 8))
+      for (let j = 1; j < this.channelCount; j++) {
+        this.data.skip(this.bitsPerSample / 8)
+      }
+    }
+    this.data = data
+    this.channelCount = 1
+    this.data.jumpTo(0)
   }
 
   readSInt8() {
@@ -96,7 +114,7 @@ class Wave {
     }
   }
 
-  _skipToChunck(bin, id) {
+  _skipToChunk(bin, id) {
     let _id = bin.readString(4)
     let _len = bin.readUIntLE(4)
     while (_id !== id && !bin.isEOF()) {
@@ -104,6 +122,7 @@ class Wave {
       _id = bin.readString(4)
       _len = bin.readUIntLE(4)
     }
+    return _len
   }
   _writeChunk(bin, id, chunk) {
     bin.writeString(id, 4)

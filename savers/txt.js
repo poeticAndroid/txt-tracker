@@ -33,7 +33,8 @@ function save_txt(music, path = "./", sampleFolder) {
         filename += ("00" + (i + 1)).slice(-2) + "." + friendlyName(music.samples[i].name.trim() || "sample") + ".wav"
         fs.writeFileSync(path + filename, new Uint8Array(music.samples[i].wave.toBuffer()))
       }
-      writeSample(music.samples[i], i + 1, filename)
+      if (music.samples[i].wave || music.samples[i].name.trim())
+        writeSample(music.samples[i], i + 1, filename)
     }
   }
   return file
@@ -44,9 +45,12 @@ function writeSample(sample, i, filename = "./sample.wav") {
   writeLine("name: " + sample.name)
   if (sample.wave) {
     writeLine("source: " + filename)
-    writeLine("volume: " + sample.volume)
-    writeLine("loopStart: " + sample.loopStart)
-    writeLine("loopLength: " + sample.loopLength)
+    if (sample.volume !== 1)
+      writeLine("volume: " + sample.volume)
+    if (sample.loopLength) {
+      writeLine("loopStart: " + sample.loopStart)
+      writeLine("loopLength: " + sample.loopLength)
+    }
   }
   if (sample.finetune)
     writeLine("finetune: " + sample.finetune)

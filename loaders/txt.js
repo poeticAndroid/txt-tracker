@@ -7,7 +7,7 @@ let file, filepos = 0,
 
 function load_txt(_file, path = "./") {
   music = {
-    title: "Untitled",
+    title: "txt-tracker",
     channelCount: 4,
     sequence: [1],
     samples: [],
@@ -109,7 +109,7 @@ function readTable() {
 }
 
 function readSample(path = "./") {
-  let sample = {}
+  let sample = { volume: 1 }
   let line = readLine().trim()
   while (line && (filepos < file.length)) {
     if (line.substring(0, 1) === "#") {
@@ -125,7 +125,7 @@ function readSample(path = "./") {
           break
         case "volume":
           sample.volume = parseFloat(value)
-          if (sample.volume > 1) sample.volume /= 64
+          if (sample.volume > 1) sample.volume /= 255
           break
         case "loopStart":
           sample.loopStart = parseInt(value)
